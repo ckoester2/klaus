@@ -35,13 +35,14 @@ def _load_markdown():
     except ImportError:
         pass
     else:
-        CONFIG['have_plantuml'] = True
-    print("Test")
-    print(CONFIG)
+        if os.environ.get('PLANTUML_SERVER'):
+            CONFIG['have_plantuml'] = True
+        else:
+            print("WARNING: PlantUML found but 'PLANTUML_SERVER' environment" +
+                  "variable not set. Not using PlantUML.")
 
     def render_markdown(content):
         if CONFIG['have_plantuml']:
-            print("Render markdown with plantuml")
             plantuml = plantuml_markdown.PlantUMLMarkdownExtension(
                 server=os.environ.get('PLANTUML_SERVER')
             )
@@ -51,7 +52,6 @@ def _load_markdown():
                 plantuml,
             ])
         else:
-            print("Render markdown WITHOUT plantuml")
             return markdown.markdown(content, extensions=[
                 'toc',
                 'extra',
