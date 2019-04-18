@@ -1,7 +1,9 @@
 import os
 
 LANGUAGES = []
-HAVE_PLANTUML = False
+CONFIG = {
+    'have_plantuml': False
+}
 
 
 def get_renderer(filename):
@@ -33,11 +35,13 @@ def _load_markdown():
     except ImportError:
         pass
     else:
-        nonlocal HAVE_PLANTUML
-        HAVE_PLANTUML = True
+        CONFIG['have_plantuml'] = True
+    print("Test")
+    print(CONFIG)
 
     def render_markdown(content):
-        if HAVE_PLANTUML:
+        if CONFIG['have_plantuml']:
+            print("Render markdown with plantuml")
             plantuml = plantuml_markdown.PlantUMLMarkdownExtension(
                 server=os.environ.get('PLANTUML_SERVER')
             )
@@ -45,6 +49,12 @@ def _load_markdown():
                 'toc',
                 'extra',
                 plantuml,
+            ])
+        else:
+            print("Render markdown WITHOUT plantuml")
+            return markdown.markdown(content, extensions=[
+                'toc',
+                'extra',
             ])
 
     LANGUAGES.append((['.md', '.mkdn', '.mdwn', '.markdown'], render_markdown))
