@@ -74,18 +74,20 @@ class KlausPythonFormatter(KlausDefaultFormatter):
         )
 
 
-def highlight_or_render(code, filename, render_markup=True, ctags=None, ctags_baseurl=None):
+def highlight_or_render(code, base_url, filename, render_markup=True,
+                        ctags=None, ctags_baseurl=None):
     """Render code using Pygments, markup (markdown, rst, ...) using the
     corresponding renderer, if available.
 
     :param code: the program code to highlight, str
+    :param base_url: base url that is prefixed to any relative links in rendered markup, str
     :param filename: name of the source file the code is taken from, str
     :param render_markup: whether to render markup if possible, bool
     :param ctags: tagsfile obj used for source code hyperlinks, ``ctags.CTags``
     :param ctags_baseurl: base url used for source code hyperlinks, str
     """
     if render_markup and markup.can_render(filename):
-        return markup.render(filename, code)
+        return markup.render(filename, base_url, code)
 
     try:
         lexer = get_lexer_for_filename(filename, code)
