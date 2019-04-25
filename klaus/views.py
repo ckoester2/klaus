@@ -422,6 +422,14 @@ class FileView(BaseFileView):
             })
 
 
+class RenderedView(FileView):
+    """Shows a file rendered using ``pygmentize``."""
+    template_name = 'view_rendered.html'
+
+    def make_template_context(self, *args):
+        super(RenderedView, self).make_template_context(*args)
+
+
 class BlameView(BaseFileView):
     template_name = 'blame_blob.html'
 
@@ -481,6 +489,7 @@ commit = CommitView.as_view('commit', 'commit')
 patch = PatchView.as_view('patch', 'patch')
 blame = BlameView.as_view('blame', 'blame')
 blob = FileView.as_view('blob', 'blob')
+rendered = RenderedView.as_view('rendered', 'rendered')
 raw = RawView.as_view('raw', 'raw')
 download = DownloadView.as_view('download', 'download')
 submodule = SubmoduleView.as_view('submodule', 'submodule')

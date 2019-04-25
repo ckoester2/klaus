@@ -52,6 +52,8 @@ class Klaus(flask.Flask):
             ('robots_txt',  '/robots.txt/'),
             ('blob',        '/<repo>/blob/'),
             ('blob',        '/<repo>/blob/<rev>/<path:path>'),
+            ('rendered',    '/<repo>/rendered/'),
+            ('rendered',    '/<repo>/rendered/<rev>/<path:path>'),
             ('blame',       '/<repo>/blame/'),
             ('blame',       '/<repo>/blame/<rev>/<path:path>'),
             ('raw',         '/<repo>/raw/<path:path>/'),

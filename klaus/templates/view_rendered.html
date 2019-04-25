@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel=stylesheet href={{ url_for('static', filename='pygments.css') }}>
+<link rel=stylesheet href={{ url_for('static', filename='klaus.css') }}>
+<link rel=icon type="image/png" href="{{ url_for('static', filename='favicon.png') }}" />
+{% if base_href %}
+<base href="{{ base_href }}"/>
+{% endif %}
+<title>{% block title %}{{ path }}{% endblock %} - {{ SITE_NAME }}</title>
+
+<script src={{ url_for('static', filename='klaus.js') }}></script>
+
+{% set raw_url = url_for('raw', repo=repo.name, rev=rev, path=path) %}
+{% macro not_shown(reason) %}
+  <div>
+    ({{ reason }} not shown &mdash; <a href="{{ raw_url }}">Download file</a>)
+  </div>
+{% endmacro %}
+
+<div class=blobview>
+{% if is_binary %}
+  {% if is_image %}
+    <a href="{{ raw_url }}"><img src="{{ raw_url }}"></a>
+  {% else %}
+    {{ not_shown("Binary data") }}
+  {% endif %}
+{% elif too_large %}
+  {{ not_shown("Large file") }}
+{% else %}
+  {% autoescape false %}
+    {% if is_markup and render_markup %}
+      <div class=markup>{{ rendered_code }}</div>
+    {% else %}
+      {{ rendered_code }}
+    {% endif %}
+  {% endautoescape %}
+{% endif %}
+</div>
