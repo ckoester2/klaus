@@ -176,7 +176,7 @@ def is_hex_prefix(s):
     try:
         binascii.unhexlify(s)
         return True
-    except binascii.Error:
+    except (binascii.Error, TypeError):
         return False
 
 

@@ -28,6 +28,9 @@ from klaus.utils import parent_directory, subpaths, force_unicode, guess_is_bina
 
 
 README_FILENAMES = [b'README', b'README.md', b'README.mkdn', b'README.mdwn', b'README.markdown', b'README.rst']
+MIMETYPE_MAPPING = {
+    '.svg': 'image/svg+xml',
+}
 
 
 def repo_list():
@@ -278,11 +281,17 @@ class IndexView(TreeViewMixin, BaseRepoView):
                 'rendered_code': None,
             })
         else:
+            readme_base_url = url_for(
+                    'raw',
+                    repo=self.context['repo'].name,
+                    rev=self.context['rev'],
+                    path=os.path.dirname(self.context['path']),
+                )
             readme_filename = force_unicode(readme_filename) 
             readme_data = force_unicode(readme_data)
             self.context.update({
                 'is_markup': markup.can_render(readme_filename),
-                'rendered_code': highlight_or_render(readme_data, readme_filename)
+                'rendered_code': highlight_or_render(readme_data, readme_base_url, readme_filename)
             })
 
 
@@ -359,8 +368,16 @@ class BaseFileView(TreeViewMixin, BaseBlobView):
         else:
             ctags_args = {}
 
+        base_url = url_for(
+                'raw',
+                repo=self.context['repo'].name,
+                rev=self.context['rev'],
+                path=os.path.dirname(self.context['path']),
+            )
+
         return highlight_or_render(
             force_unicode(self.context['blob_or_tree'].data),
+            base_url,
             self.context['filename'],
             render_markup,
             **ctags_args
@@ -424,10 +441,13 @@ class RawView(BaseBlobView):
     served through a static file server).
     """
     def get_response(self):
-        # Explicitly set an empty mimetype. This should work well for most
-        # browsers as they do file type recognition anyway.
-        # The correct way would be to implement proper file type recognition here.
-        return Response(self.context['blob_or_tree'].chunked, mimetype='')
+        # Set mime type based on known mapping of a few limited filename
+        # extensions, using an empty mime type as default
+
+        _, ext = os.path.splitext(self.context['path'])
+        return Response(
+            self.context['blob_or_tree'].chunked,
+            mimetype=MIMETYPE_MAPPING.get(ext, ''))
 
 
 class DownloadView(BaseRepoView):
