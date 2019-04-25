@@ -54,7 +54,8 @@ def _load_markdown():
 
         if CONFIG['have_plantuml']:
             extensions.append(plantuml_markdown.PlantUMLMarkdownExtension(
-                server=os.environ.get('PLANTUML_SERVER')
+                server=os.environ.get('PLANTUML_SERVER'),
+                format='svg_inline',
             ))
 
         if CONFIG['have_pathconverter']:
